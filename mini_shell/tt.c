@@ -22,11 +22,11 @@ t_token *new_token(char *content, t_token_type type)
 {
     t_token *tok = malloc(sizeof(t_token));
     if (!tok)
-        return NULL;
+        return (NULL);
     tok->content = content;
     tok->type = type;
-    tok->next = NULL;
-    return tok;
+    tok->next = (NULL);
+    return (tok);
 }
 
 void add_token(t_token **lst, char *content, t_token_type type)
@@ -106,14 +106,6 @@ void lexer(char *input, t_token **tokens)
     }
 }
 
-void print_tokens(t_token *tokens)
-{
-    while (tokens)
-    {
-        printf("Token: %-12s | Type: %d\n", tokens->content, tokens->type);
-        tokens = tokens->next;
-    }
-}
 
 int main()
 {
@@ -121,7 +113,11 @@ int main()
     t_token *tokens = NULL;
 
     lexer(input, &tokens);
-    print_tokens(tokens);
-
+    // print_tokens(tokens);
+    while (tokens)
+    {
+        printf("Token: %s ==>  Type: %d\n", tokens->content, tokens->type);
+        tokens = tokens->next;
+    }
     return 0;
 }
