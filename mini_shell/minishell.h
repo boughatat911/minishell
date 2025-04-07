@@ -6,7 +6,7 @@
 /*   By: nbougrin <nbougrin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/04 10:26:14 by nbougrin          #+#    #+#             */
-/*   Updated: 2025/04/07 14:50:34 by nbougrin         ###   ########.fr       */
+/*   Updated: 2025/04/07 17:19:39 by nbougrin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <readline/readline.h>
+
 typedef enum {
     T_WORD,
     T_PIPE,
@@ -27,6 +28,8 @@ typedef enum {
     T_DQUOTE,
     T_SQUOTE
 } TokenType;
+
+#define HERDOC 1
 
 
 typedef struct s_token

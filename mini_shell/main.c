@@ -1,149 +1,103 @@
 
-// #include "minishell.h"
-#include "../LIBFT/libft.h"
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-
-typedef struct s_token {
-    char *content;
-    struct s_token *next;
-} t_token;
-// t_list	*ft_lstnew(void *content)
-// {
-// 	t_list	*node;
-
-// 	node = malloc(sizeof(t_list));
-// 	if (!node)
-// 		return (NULL);
-// 	node->content = content;
-// 	node->next = NULL;
-// 	return (node);
-// }
-// void	ft_lstadd_back(t_list **lst, t_list *new)
-// {
-// 	t_list	*final;
-
-// 	if (!new || !lst)
-// 		return ;
-// 	if (*lst == NULL)
-// 	{
-// 		*lst = new;
-// 		return ;
-// 	}
-// 	final = ft_lstlast(*lst);
-// 	final->next = new;
-// 	return ;
-// }
-char	*ft_ssubstr(char const *s, unsigned int start, size_t len)
+#include "minishell.h"
+static	size_t	word_len(char const *s, char c)
 {
-	char	*sub;
-	size_t	s_len;
+	size_t	len;
+
+	len = 0;
+	while (*s && *s++ != c)
+		len++;
+	return (len);
+}
+
+static	size_t	count_words(char const *s, char c)
+{
+	int	count;
+	int	in_word;
+
+	count = 0;
+	in_word = 0;
+	if (!s)
+		return (0);
+	while (*s)
+	{
+		if (*s == c)
+			in_word = 0;
+		else if (!in_word)
+		{
+			in_word = 1;
+			count++;
+		}
+		s++;
+	}
+	return (count);
+}
+
+static	char	*ft_strncpy(char *dst, const char *src, size_t len)
+{
 	size_t	i;
+
+	i = 0;
+	while (i < len && src[i] != '\0')
+	{
+		dst[i] = src[i];
+		i++;
+	}
+	while (i < len)
+	{
+		dst[i] = '\0';
+		i++;
+	}
+	return (dst);
+}
+
+static	void	free2darray(char **array, int n)
+{
+	while (n--)
+		free(array[n]);
+	free(array);
+}
+
+char	**ft_split_pipe(char *s, char c, int index)
+{
+	size_t		count;
+	size_t		i;
+	char		**res;
 
 	i = 0;
 	if (!s)
 		return (NULL);
-	s_len = strlen(s);
-	if (start > s_len)
-		return (strdup(""));
-	if (len > s_len - start)
-		len = s_len - start;
-	sub = (char *)malloc(sizeof(char) * (len + 1));
-	if (!sub)
+	count = count_words(s, c);
+	res = (char **)malloc(sizeof(char *) * (count + 1));
+	if (!res)
 		return (NULL);
-	while (i < len && s[start])
+	while (i < count)
 	{
-		sub[i] = s[start];
-		i++;
-		start++;
+		while (*s && *s == c)
+			s++;
+		res[i] = malloc(sizeof (char) * (word_len(s, c) + 1));
+		if (!res[i])
+			return (free2darray(res, i), NULL);
+		ft_strncpy(res[i], s, word_len(s, c));
+		res[i++][word_len(s, c)] = '\0';
+		s = s + word_len(s, c);
 	}
-	sub[i] = '\0';
-	return (sub);
+	res[i] = NULL;
+	return (res);
 }
 
-	// echo '"hello swor<''ld"' | grep hello > file.txt;
-// int main()
-// {
-// 	t_token *token_list;
-// 	token_list = NULL;
-// 	int i = 0;
-// 	int j = 0;
-// 	int pipe = 0;
-// 	int start = 0;
-// 	int end = 0;
-// 	char *input;
-// 	// Double
-//     // int  in = 0;
-// 	// int dbl = 0;
-//     // int  out = 0;
-//     // while (1)
-// 	// {
-// 		input = readline("Minishell >> ");
-// 		// char *copy = ft_strdup(input);
-// 		while (input[i] == ' ')
-// 			i++;
-// 		// if (input[i] == '|')
-// 		// {
-// 		// 	printf("error pipe\n");
-// 		// 	exit(1);
-// 		// }
-// 		// char **pipe_split = ft_split(input, '|');
-// 		while (input[i])
-// 		{
-			
-// 			if (input[i] == '"')
-// 			{
-// 				start = i;
-// 				while (input[i] =! '"')
-// 					i++;
-// 				if (input[i] == '"')
-// 				{
-// 					end = i ;
-// 					token_list = ft_lstnew(ft_substr(input, start, end));
-// 				}
-// 			}
-// 			else if (input[i] == '\'')
-// 			{
-// 				start = i;
-// 				while (input[i] =! '\'')
-// 					i++;
-// 				if (input[i] == '\'')
-// 				{
-// 					end = i ;
-// 					ft_lstadd_back(token_list, ft_lstnew(ft_substr(input, start, end - start)));
-// 				}
-// 			}
-// 			i++;
-// 		}
-// 		t_token *tmp = token_list;
+int main()
+{
+    char *input = "echo '|' | grep hello > file.txt | ls";
 
-// 		while (tmp)
-// 		{
-// 			printf("%s\n", tmp->content);
-// 			tmp = tmp->next;
-// 		}
-		
-// 	}
-// }
+    char **cmds = ft_split_pipe(input);
+    int i = 0;
 
+    while (cmds[i])
+    {
+        printf("Command %d: [%s]\n", i, cmds[i]);
+        i++;
+    }
 
-// --------------------------------------------------
-			// if (input[i] == '|')
-			// {
-			// 	pipe++;
-			// }
-			// else if (input[i] == '>')
-			// {
-
-			// }
-			// else if (input[i] == '"' || input[i] == '\'')
-			// {
-
-			// 	// read until closing quote
-			// }
-			// else
-			// {
-
-			// 	// build word token
-			// }
+    return 0;
+}

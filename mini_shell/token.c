@@ -116,10 +116,11 @@ typedef struct s_token
 t_token *ft_lstnew(char *content)
 {
     t_token *node = malloc(sizeof(t_token));
-    if (!node) return NULL;
+    if (!node)
+		return (NULL);
     node->content = content;
     node->next = NULL;
-    return node;
+    return (node);
 }
 
 void ft_lstadd_back(t_token **lst, t_token *new)
@@ -165,6 +166,7 @@ int main()
 		printf("syntax error pipe\n");
 		exit (1);
 	}
+	//
 	spl = ft_split(input, '|');
 	while (spl[i])
 	{
@@ -174,12 +176,13 @@ int main()
 	i = 0;
     while (input[i])
     {
-        if (input[i] == '"')
+        if (input[i] == '"' || input == '\'')
         {
+			char c = input[i];
             start = ++i;
-            while (input[i] && input[i] != '"')
+            while (input[i] && input[i] != c)
                 i++;
-            if (input[i] == '"')
+            if (input[i] == c)
             {
                 substr = ft_substr(input, start, i - start);
                 ft_lstadd_back(&token_list, ft_lstnew(substr));
@@ -218,3 +221,26 @@ int main()
     }
     return (0);
 }
+
+
+// t_token *new_token(char *content, t_token_type type)
+// {
+//     t_token *tok = malloc(sizeof(t_token));
+//     tok->content = content;
+//     tok->type = HERDOC;
+//     tok->next = NULL;
+//     return tok;
+// }
+
+// void add_token(t_token **lst, char *content, t_token_type type)
+// {
+//     t_token *tok = new_token(content, type);
+//     if (!*lst)
+//         *lst = tok;
+//     else {
+//         t_token *tmp = *lst;
+//         while (tmp->next)
+//             tmp = tmp->next;
+//         tmp->next = tok;
+//     }
+// }
