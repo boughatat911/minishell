@@ -55,6 +55,13 @@ char *substr(char *s, int start, int len)
 void lexer(char *input, t_token **tokens)
 {
     int i = 0;
+	while (input[i] == ' ') // skip space
+		i++;
+	if (input[i] == '|') // check | is first this is syntax error
+	{
+		printf("syntax error pipe\n");
+		exit (1);
+	}
     while (input[i])
     {
         if (input[i] == ' ')
@@ -81,6 +88,11 @@ void lexer(char *input, t_token **tokens)
         }
         else if (input[i] == '|')
         {
+			if (input[i + 1 ] == '|')
+			{
+				printf("syntax error pipe\n");
+				exit (1);
+			}
             add_token(tokens, strdup("|"), PIPE);
             i++;
         }
