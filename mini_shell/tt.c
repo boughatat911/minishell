@@ -40,7 +40,7 @@ void add_token(t_token **lst, char *content, t_token_type type)
             tmp = tmp->next;
         tmp->next = tok;
     }
-}
+} 
 
 char *substr(char *s, int start, int len)
 {
