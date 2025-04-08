@@ -54,7 +54,9 @@ char *substr(char *s, int start, int len)
 
 void lexer(char *input, t_token **tokens)
 {
-    int i = 0;
+    int i;
+	int start;
+	i = 0;
 	while (input[i] == ' ') // skip space
 		i++;
 	if (input[i] == '|') // check | is first this is syntax error
@@ -62,60 +64,60 @@ void lexer(char *input, t_token **tokens)
 		printf("syntax error pipe\n");
 		exit (1);
 	}
-    while (input[i])
-    {
-        if (input[i] == ' ')
-            i++;
-        else if (input[i] == '>' && input[i + 1] == '>')
-        {
-            add_token(tokens, strdup(">>"), APPEND);
-            i += 2;
-        }
-        else if (input[i] == '<' && input[i + 1] == '<')
-        {
-            add_token(tokens, strdup("<<"), HEREDOC);
-            i += 2;
-        }
-        else if (input[i] == '>')
-        {
-            add_token(tokens, strdup(">"), REDIR_OUT);
-            i++;
-        }
-        else if (input[i] == '<')
-        {
-            add_token(tokens, strdup("<"), REDIR_IN);
-            i++;
-        }
-        else if (input[i] == '|')
-        {
-			if (input[i + 1 ] == '|')
-			{
-				printf("syntax error pipe\n");
-				exit (1);
-			}
-            add_token(tokens, strdup("|"), PIPE);
-            i++;
-        }
-        else if (input[i] == '"' || input[i] == '\'')
-        {
-            char quote = input[i++];
-            int start = i;
-            while (input[i] && input[i] != quote)
-                i++;
-            add_token(tokens, substr(input, start, i - start), WORD);
-            if (input[i] == quote)
-                i++;
-        }
-        else
-        {
-            int start = i;
-            while (input[i] && input[i] != ' ' && input[i] != '|' &&
-                   input[i] != '<' && input[i] != '>' &&
-                   input[i] != '"' && input[i] != '\'')
-                i++;
-            add_token(tokens, substr(input, start, i - start), WORD);
-        }
-    }
+		while (input[i])
+		{
+			if (input[i] == ' ')
+			i++;
+		else if (input[i] == '>' && input[i + 1] == '>')
+		{
+			add_token(tokens, strdup(">>"), APPEND);
+			i += 2;
+		}
+		else if (input[i] == '<' && input[i + 1] == '<')
+		{
+			add_token(tokens, strdup("<<"), HEREDOC);
+			i += 2;
+		}
+		else if (input[i] == '>')
+		{
+			add_token(tokens, strdup(">"), REDIR_OUT);
+			i++;
+		}
+		else if (input[i] == '<')
+		{
+			add_token(tokens, strdup("<"), REDIR_IN);
+			i++;
+		}
+		else if (input[i] == '|')
+		{
+		if (input[i + 1 ] == '|')
+		{
+			printf("syntax error pipe\n");
+			exit (1);
+		}
+			add_token(tokens, strdup("|"), PIPE);
+			i++;
+		}
+		else if (input[i] == '"' || input[i] == '\'')
+		{
+			char quote = input[i++];
+			start = i;
+			while (input[i] && input[i] != quote)
+				i++;
+			add_token(tokens, substr(input, start, i - start), WORD);
+			if (input[i] == quote)
+				i++;
+		}
+		else
+		{
+			start = i;
+			while (input[i] && input[i] != ' ' && input[i] != '|' &&
+					input[i] != '<' && input[i] != '>' &&
+					input[i] != '"' && input[i] != '\'')
+				i++;
+			add_token(tokens, substr(input, start, i - start), WORD);
+		}
+	}
 }
 
 
@@ -131,5 +133,15 @@ int main()
         printf("Token: %s ==>  Type: %d\n", tokens->content, tokens->type);
         tokens = tokens->next;
     }
+	printf ("\n---------------------\n");
+	// int i = 0;
+	char **cmds = ft_split_pipe(input, '|');
+	int i = 0;
+
+	while (cmds[i])
+	{
+		printf("Command %d: [%s]\n", i, cmds[i]);
+		i++;
+	}
     return 0;
 }
