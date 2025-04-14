@@ -4,6 +4,7 @@
 #include <readline/readline.h>
 
 typedef enum e_token_type {
+    STRING,
     WORD,
     PIPE,
     REDIR_IN,   // <
@@ -15,6 +16,8 @@ typedef enum e_token_type {
 typedef struct s_token {
     char *content;
     t_token_type type;
+    int index;
+    int ind;
     struct s_token *next;
 } t_token;
 
@@ -29,17 +32,19 @@ t_token *new_token(char *content, t_token_type type)
     return (tok);
 }
 
-void add_token(t_token **lst, char *content, t_token_type type)
+void add_token(t_token **lst, char *content, t_token_type type, int index)
 {
     t_token *tok = new_token(content, type);
     if (!*lst)
         *lst = tok;
-    else {
+    else
+	{
         t_token *tmp = *lst;
         while (tmp->next)
             tmp = tmp->next;
         tmp->next = tok;
     }
+		tok->index = index;
 } 
 
 char *substr(char *s, int start, int len)
@@ -51,12 +56,39 @@ char *substr(char *s, int start, int len)
     out[len] = 0;
     return (out);
 }
+void qoute(t_token **tokens, int *i, char *input, int *index)
+{
+	int start;
+	char quote;
 
+	start = 0;
+	quote = input[(*i)++];
+	start = *i;
+	while (input[*i] && input[*i] != quote)
+		(*i)++;
+	add_token(tokens, substr(input, start, *i - start), STRING, *index);
+	if (input[*i] == quote)
+		(*i)++;
+		(*index)++;
+}
+void	ft_word(t_token **tokens, int *i, char *input, int *index)
+{
+	int	start;
+	start = *i;
+	while (input[(*i)] && input[(*i)] != ' ' && input[(*i)] != '|' &&
+			input[(*i)] != '<' && input[(*i)] != '>' &&
+			input[(*i)] != '"' && input[(*i)] != '\'')
+		(*i)++;
+	add_token(tokens, substr(input, start, (*i) - start), WORD, (*index));
+	(*index)++;
+}
 void lexer(char *input, t_token **tokens)
 {
     int i;
+	int index;
 	int start;
 	i = 0;
+	index = 1;
 	while (input[i] == ' ') // skip space
 		i++;
 	if (input[i] == '|') // check | is first this is syntax error
@@ -64,58 +96,68 @@ void lexer(char *input, t_token **tokens)
 		printf("syntax error pipe\n");
 		exit (1);
 	}
-		while (input[i])
-		{
-			if (input[i] == ' ')
+	while (input[i])
+	{
+
+		if (input[i] == ' ')
 			i++;
 		else if (input[i] == '>' && input[i + 1] == '>')
 		{
-			add_token(tokens, strdup(">>"), APPEND);
+			add_token(tokens, strdup(">>"), APPEND, index);
 			i += 2;
+			index++;
 		}
 		else if (input[i] == '<' && input[i + 1] == '<')
 		{
-			add_token(tokens, strdup("<<"), HEREDOC);
+			add_token(tokens, strdup("<<"), HEREDOC, index);
 			i += 2;
+			index++;
 		}
 		else if (input[i] == '>')
 		{
-			add_token(tokens, strdup(">"), REDIR_OUT);
+			add_token(tokens, strdup(">"), REDIR_OUT, index);
 			i++;
+			index++;
 		}
 		else if (input[i] == '<')
 		{
-			add_token(tokens, strdup("<"), REDIR_IN);
+			add_token(tokens, strdup("<"), REDIR_IN, index);
 			i++;
+			index++;
 		}
 		else if (input[i] == '|')
 		{
-		if (input[i + 1 ] == '|')
-		{
-			printf("syntax error pipe\n");
-			exit (1);
-		}
-			add_token(tokens, strdup("|"), PIPE);
+			if (input[i + 1 ] == '|')
+			{
+				printf("syntax error pipe\n");
+				exit (1);
+			}
+			add_token(tokens, strdup("|"), PIPE, index);
 			i++;
+			index++;
 		}
 		else if (input[i] == '"' || input[i] == '\'')
 		{
-			char quote = input[i++];
-			start = i;
-			while (input[i] && input[i] != quote)
-				i++;
-			add_token(tokens, substr(input, start, i - start), WORD);
-			if (input[i] == quote)
-				i++;
+			qoute(tokens, &i, input, &index);
+			// char quote = input[i++];
+			// start = i;
+			// while (input[i] && input[i] != quote)
+			// 	i++;
+			// add_token(tokens, substr(input, start, i - start), STRING, index);
+			// if (input[i] == quote)
+			// 	i++;
+			// index++;
 		}
 		else
 		{
-			start = i;
-			while (input[i] && input[i] != ' ' && input[i] != '|' &&
-					input[i] != '<' && input[i] != '>' &&
-					input[i] != '"' && input[i] != '\'')
-				i++;
-			add_token(tokens, substr(input, start, i - start), WORD);
+			ft_word(tokens, &i, input, &index);
+			// start = i;
+			// while (input[i] && input[i] != ' ' && input[i] != '|' &&
+			// 		input[i] != '<' && input[i] != '>' &&
+			// 		input[i] != '"' && input[i] != '\'')
+			// 	i++;
+			// add_token(tokens, substr(input, start, i - start), WORD, index);
+			// index++;
 		}
 	}
 }
@@ -125,23 +167,31 @@ int main()
 {
     char *input = readline("minishell> ");
     t_token *tokens = NULL;
+    t_token *copy = NULL;
 
     lexer(input, &tokens);
+	copy = tokens;
     // print_tokens(tokens);
     while (tokens)
     {
-        printf("Token: %s ==>  Type: %d\n", tokens->content, tokens->type);
+        printf("Token: {%s} ==>  Type: %d, index ==> [%d]\n", tokens->content, tokens->type, tokens->index);
         tokens = tokens->next;
     }
+// echo 'hello "yool"' | grep hello > file.txt | ls
 	printf ("\n---------------------\n");
+	while (copy)
+    {
+        printf("Token: %s\n", copy->content);
+        copy = copy->next;
+    }
 	// int i = 0;
-	char **cmds = ft_split_pipe(input, '|');
-	int i = 0;
+	// char **cmds = ft_split_pipe(input, '|');
+	// int i = 0;
 
-	while (cmds[i])
-	{
-		printf("Command %d: [%s]\n", i, cmds[i]);
-		i++;
-	}
+	// while (cmds[i])
+	// {
+	// 	printf("Command %d: [%s]\n", i, cmds[i]);
+	// 	i++;
+	// }
     return 0;
 }

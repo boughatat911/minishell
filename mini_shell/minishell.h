@@ -6,7 +6,7 @@
 /*   By: nbougrin <nbougrin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/04 10:26:14 by nbougrin          #+#    #+#             */
-/*   Updated: 2025/04/08 17:01:59 by nbougrin         ###   ########.fr       */
+/*   Updated: 2025/04/09 15:15:22 by nbougrin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,11 +31,11 @@ typedef enum {
 
 #define HERDOC 1
 
-token.> hgf.->
 typedef struct s_token
 {
     TokenType type;
     char *content;
+    int index;
     struct s_token *next;
 } t_token;
 
