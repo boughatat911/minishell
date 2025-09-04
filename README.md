@@ -4,8 +4,8 @@ A minimal implementation of a shell program written in C, developed as part of t
 
 ## Authors
 
-- **ayameur** - 42 Network
-- **nbougrin** - 42 Network
+- **[ayameur](https://profile.intra.42.fr/users/ayameur)** - 42 Network
+- **[nbougrin](https://profile.intra.42.fr/users/nbougrin)** - 42 Network
 
 ## Overview
 
