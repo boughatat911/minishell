@@ -1,4 +1,4 @@
-# LinkedIn Resume - Minishell Project
+# Resume - Minishell Project
 
 ## Project Overview
 **Minishell** - A complete shell implementation in C  
