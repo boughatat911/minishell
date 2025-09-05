@@ -154,7 +154,7 @@ This project demonstrates proficiency in:
 
 ## 🔗 Project Links
 
-- **GitHub Repository**: [Minishell Project](https://github.com/yourusername/minishell)
+- **GitHub Repository**: [Minishell Project](https://github.com/boughatat911/minishell)
 - **42 Intra Profile**: [nbougrin](https://profile.intra.42.fr/users/nbougrin)
 - **Collaborator**: [ayameur](https://profile.intra.42.fr/users/ayameur)
 
