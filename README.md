@@ -129,7 +129,7 @@ typedef struct s_cmd
 
 ### Building
 ```bash
-git clone <repository-url>
+git clone git@github.com:boughatat911/minishell.git
 cd minishell
 make
 ```
